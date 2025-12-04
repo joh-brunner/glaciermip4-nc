@@ -1,0 +1,18 @@
+,var_short_name,var_long_name,unit,sign,resolution,type,comment
+0,area_annual,Glacier area,m2,,double,Annual,Glacier area at start of the year ???
+1,mass_annual,Glacier mass,m.w.e / m3 / kg * ???,,double,Annual,Total glacier mass at start of the year
+2,mass_bsl_annual,Glacier mass below sea level,m.w.e / m3 / kg * ???,,double,annual,Glacier mass below sea level of tidewater glaciers at start/end ? of the year
+3,frontalabl_annual,Total annual frontal ablation,m.w.e / m3 / kg * ???,1,double,Annual,"Frontal ablation of tidewater glaciers (mass losses from calving, subaerial frontal melting, sublimation above the waterline and subaqueous frontal melting below the waterline); positive values indicate mass lost like melt"
+4,massbal_annual,Total mass balance  ,kg m-2,,double,monthly/annual,"Total mass balance (sum of accumulation, melt, refreezing and frontal ablation); mass gained is positive, mass removed is negative"
+5,acc_month,Total accumulation,m.w.e / m3 / kg * ???,positive,double,monthly/annual,"Mass added to the glacier except for refreezing (e.g., snowfall, avalanches)"
+6,melt_month,Total snow- and icemelt,m.w.e / m3 / kg * ???,negative,double,monthly/annual,"Mass removed from the glacier except for frontal ablation (e.g., melt, evaporation); mass loss is negative"
+7,refr_month,Total refreezing,m.w.e / m3 / kg * ???,1,double,monthly/annual ???,Total refreezing within the snowpack or glacier.
+8,rain_month,Rainfall over glacier area ,m.w.e / m3 / kg * ???,positive,double,monthly,Rain (liquid recipitation) over glacierized area 
+9,precip_month,Total precipitation,m.w.e / m3 / kg * ???,positive,double,monthly,Total precipitation over glacierized area as used as input to accumulation calculations (i.e. after possible downscaling of gridded precipitation data)
+10,temp_month,Near-surface air temperature,K,positive,double,monthly,Mean near-surface (2 m) air temperature over glacierized area as used as input to mass balance calculations (i.e. possibly downscaled from gridded climate data)
+11,ela,Altitude of the equilibrium line asl,m,positive,double,annual,Elevation of the annual equilibrium line (mean elevation where the climatic mass balance is zero at the end of the mass-balance year)
+12,snowline,Snowline altitude asl,m,positive,double,monthly,Elevation of the transient equilibrium line (mean elevation where the climatic mass balance is zero)
+13,arr,Accumulation Area Ratio,-,,double,annual,Ratio of accumulation area to total glacier area
+14,time,time,days since 2000-01-01 00:00:00.000000,positive,long,monthly,Start of the month
+15,RGIId,Randolph Glacier Inventory ID,-,positive,string,-,RGI 6 or 7?
+16,,,,,,,area_annual
