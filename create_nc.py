@@ -1,6 +1,8 @@
+# GlacierMIP output following the Climate and Forecast (CF) metadata conventions
+
 # What unit should be used for time? CF says "days since epoch", but years since epoch could also be an option
 
-# toDo: Add sample data from csv-table as variables
+# toDo: Add defintions from csv-table as data variables
 
 import xarray as xr
 import numpy as np
@@ -29,8 +31,8 @@ def create_template_nc():
     epoch = np.datetime64(epoch_date, "D")
     end = np.datetime64(end_date, "D")
 
-    annual_time, annual_bounds = get_time_and_bounds(start_date_year, end, epoch, "datetime64[Y]")
-    monthly_time, monthly_bounds = get_time_and_bounds(start_date_month, end, epoch, "datetime64[M]")
+    annual_time, annual_bounds = get_days_and_bounds(start_date_year, end, epoch, "datetime64[Y]")
+    monthly_time, monthly_bounds = get_days_and_bounds(start_date_month, end, epoch, "datetime64[M]")
 
     # TEMPLATE NC
     ds = xr.Dataset(
@@ -78,17 +80,17 @@ def add_sample_data(ds):
     # Copy the data into the ds
     ds["mass"].values[glacier_idx, :] = annual_mass
     # Set its attribute
-    ds["mass"].attrs["cell_methods"] = "time: point"
+    ds["mass"].attrs["cell_methods"] = "annual_time: point"
 
     # Create a second variable (code duplication)
     ds["mass_change"] = (["glacier_id", "monthly_time"], np.zeros((len(ds.coords["glacier_id"]), len(ds.coords["monthly_time"]))))
     ds["mass_change"].values[glacier_idx, :] = mass_change_monthly
-    ds["mass_change"].attrs["cell_methods"] = "time: sum"
+    ds["mass_change"].attrs["cell_methods"] = "monthly_time: sum"
 
     return ds
 
 
-def get_time_and_bounds(start_date, end, epoch, datetime_type="datetime64[Y]"):
+def get_days_and_bounds(start_date, end, epoch, datetime_type="datetime64[Y]"):
     np_days = np.arange(np.datetime64(start_date, "D"), end, dtype="datetime64[D]")
     dates = np_days[np_days == np_days.astype(datetime_type)]
 
