@@ -4,8 +4,10 @@
 
 # toDo: Add defintions from csv-table as data variables
 
+import sys
 import xarray as xr
 import numpy as np
+import subprocess
 
 # Start the timeseries one timestep earlier for the bounds variables
 # This could be improved by automatically loading the the timestep (monthly and annual) prior to the epoch date
@@ -18,11 +20,23 @@ end_date = "2100-01-02"  # set to 2301 if necessary,
 def main():
     # Create an empty template nc with correct axes
     ds = create_template_nc()
-    ds.to_netcdf("template.nc")
+
+    print("annual_time units:", ds["annual_time"].attrs)
+    print("bounds units:", ds["annual_time_bounds"].attrs)
+
+    encoding = {
+        "monthly_time_bounds": {"_FillValue": None, "dtype": "int32"},
+        "annual_time_bounds": {"_FillValue": None, "dtype": "int32"},
+    }
+
+    print(ds.data_vars)
+    ds.to_netcdf("template.nc", engine="netcdf4", format="NETCDF4", encoding=encoding)
 
     # Add some sample data to the nc
     filled_ds = add_sample_data(ds)
-    filled_ds.to_netcdf("template_with_data.nc")
+    filled_ds.to_netcdf("template_with_data.nc", engine="netcdf4", format="NETCDF4")
+
+    run_cfchecker("template.nc")
 
 
 def create_template_nc():
@@ -40,7 +54,7 @@ def create_template_nc():
             "annual_time": annual_time,
             "monthly_time": monthly_time,
             "nbounds": [0, 1],
-            "glacier_id": [""],
+            "glacier_id": np.array(["RGI-01.123", "RGI-01.456", "RGI-01.789"], dtype="S4"),
         },
         data_vars={
             "annual_time_bounds": (["annual_time", "nbounds"], annual_bounds),
@@ -50,6 +64,12 @@ def create_template_nc():
 
     set_time_attributes(ds, "annual", epoch)
     set_time_attributes(ds, "monthly", epoch)
+
+    ds["annual_time_bounds"].attrs["units"] = ds["annual_time"].attrs["units"]
+    ds["annual_time_bounds"].attrs["calendar"] = ds["annual_time"].attrs["calendar"]
+
+    ds["annual_time_bounds"] = ds["annual_time_bounds"].astype("int64")
+    ds["monthly_time_bounds"] = ds["monthly_time_bounds"].astype("int64")
 
     # Save to NetCDF file
     return ds
@@ -68,12 +88,15 @@ def add_sample_data(ds):
     # Add annual_mass and and mass_change_monthly to nc-file
     ds = xr.open_dataset("template.nc")
 
-    # Add a new glacier to the dataset
-    my_glacier_ids = np.array(["RGI7_123456"])
-    ds.coords["glacier_id"] = my_glacier_ids
+    my_glacier_ids_str = ["RGI7_123456"]
+    maxlen = max(len(s) for s in my_glacier_ids_str)
 
-    # Find the index of the target glacier_id in the 'glacier_id' coordinate
-    glacier_idx = np.where(ds.coords["glacier_id"].values == "RGI7_123456")[0][0]
+    my_glacier_ids = np.array(my_glacier_ids_str, dtype=f"S{maxlen}")
+
+    ds = ds.assign_coords(glacier_id=my_glacier_ids)
+
+    glacier_ids_unicode = ds.coords["glacier_id"].values.astype(str)
+    glacier_idx = np.where(glacier_ids_unicode == "RGI7_123456")[0]
 
     # Create a new variable
     ds["mass"] = (["glacier_id", "annual_time"], np.zeros((len(ds.coords["glacier_id"]), len(ds.coords["annual_time"]))))
@@ -107,7 +130,23 @@ def set_time_attributes(ds, resolution, epoch):
     var = resolution + "_time"
     ds[var].attrs["long_name"] = resolution + " time (days since " + str(epoch) + ")"
     ds[var].attrs["units"] = "days since " + str(epoch)
+    ds[var + "_bounds"].attrs["units"] = "days since " + str(epoch)
     ds[var].attrs["bounds"] = resolution + "_time_bounds"
+    ds[var].attrs["calendar"] = "gregorian"
+
+
+def run_cfchecker(nc_path):
+    cmd = ["cfchecks", nc_path]  # or ["cfcheck", nc_path] depending on your install
+
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)  # CF checker returns nonzero exit code on warnings/errors
+    except FileNotFoundError:
+        raise RuntimeError("cfchecks command not found. Try:\n" "  pip install cfchecker\n" "or check that ~/.local/bin is in your PATH.")
+
+    print("STDOUT:\n", result.stdout)
+    print("STDERR:\n", result.stderr)
+
+    return result.stdout, result.stderr
 
 
 main()
