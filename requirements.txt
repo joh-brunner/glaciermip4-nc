@@ -1,0 +1,6 @@
+numpy>=1.26
+xarray>=2024.1.0
+netCDF4>=1.6
+jupyterlab>=4.0
+ipykernel>=6.29
+cfchecker>=4.1
