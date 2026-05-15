@@ -1,1 +1,5 @@
 __pycache__
+oggm_data
+
+# Exclude all the nc files as they can be generated quickly in the notebooks
+*.nc
