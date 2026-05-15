@@ -35,11 +35,11 @@ def create_template_nc(
     ds = xr.Dataset(
         coords={
             time_var: time,
-            "nbounds": [0, 1],
+            "nv": [0, 1],
         },
         data_vars={
             bounds_var: (
-                [time_var, "nbounds"],
+                [time_var, "nv"],
                 bounds,
             ),
         },

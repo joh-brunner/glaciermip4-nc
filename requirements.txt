@@ -5,3 +5,4 @@ jupyterlab>=4.0
 ipykernel>=6.29
 cfchecker>=4.1
 dask
+iris
