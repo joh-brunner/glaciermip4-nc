@@ -1,0 +1,127 @@
+variables:
+
+  annual:
+
+    area:
+      short_name: area
+      long_name: Glacier area
+      units: m2
+      dtype: float32
+      cell_method: point
+      temporal_resolution: annual
+      description: "Glacier area at the start of the year."
+
+    mass:
+      short_name: mass
+      long_name: Glacier mass
+      units: kg
+      dtype: float32
+      cell_method: point
+      temporal_resolution: annual
+      description: "Total glacier mass at start of the year."
+
+    mass_bsl:
+      short_name: mass_bsl
+      long_name: Glacier mass below sea level
+      units: kg
+      dtype: float32
+      cell_method: point
+      temporal_resolution: annual
+      description: "Glacier mass below sea level of tidewater glaciers at start of the year. Needed for conversion to sea-level rise."
+
+    frontal_abl:
+      short_name: frontal_abl
+      long_name: Total annual frontal ablation
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: annual
+      description: >
+        Frontal ablation of marine- and lake-terminating glaciers (mass losses from calving,
+        subaerial frontal melting, sublimation above the waterline and subaqueous frontal
+        melting below the waterline) over the preceding year; positive values indicate mass loss.
+        If not calculated put NaN.
+
+  monthly:
+    acc:
+      short_name: acc
+      long_name: Total accumulation
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: monthly
+      description: >
+        Mass added to the glacier except for refreezing.
+
+    melt:
+      short_name: melt
+      long_name: Total glacier melt (snow, ice, firn)
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: monthly
+      description: >
+        Mass removed from the glacier except for frontal ablation
+        (e.g., melt, evaporation). Melt is reported as positive values.
+
+    refreeze:
+      short_name: refreeze
+      long_name: Total refreezing
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: monthly
+      description: >
+        If not calculated put NaN. Total refreezing within the
+        snowpack or glacier.
+
+    runoff_glac:
+      short_name: runoff_glac
+      long_name: Glacier runoff from glacierized area
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: monthly
+      description: >
+        Glacier runoff over the evolving glacierized area,
+        defined as melt minus refreezing plus liquid precipitation.
+        The values represent “moving-gauge” glacier runoff.
+
+    precip:
+      short_name: precip
+      long_name: Total precipitation over initial glacierized area
+      units: kg
+      dtype: float32
+      cell_method: sum
+      temporal_resolution: monthly
+      description: >
+        Total precipitation over the initial (year 2000)
+        glacierized area after possible downscaling of climate
+        input data (e.g., applying precipitation correction
+        factors and gradients). This represents the actual
+        precipitation values used in the accumulation calculations,
+        with spatial averages area-weighted based on
+        elevation-dependent or grid-based simulations.
+        The purpose is to evaluate in how far model differences
+        result from different downscaled precipitation.
+
+    temp:
+      short_name: temp
+      long_name: Near-surface air temperature over initial glacierized area
+      units: K
+      dtype: float32
+      cell_method: mean
+      temporal_resolution: monthly
+      description: >
+        Mean near-surface (2 m) area-weighted air temperature
+        over the initial glacierized area (year 2000) after
+        possible downscaling of climate input data
+        (e.g., application of bias-correction or lapse rate).
+        This represents the actual temperature values used in
+        the melt calculations and the separation of solid and
+        liquid precipitation. Temperatures must be area-weighted:
+        for each spatial element (elevation band or grid cell),
+        use the temperature weighted by that element’s area
+        (year 2000). The purpose is to evaluate in how far
+        model differences result from different downscaled
+        air temperatures.

@@ -12,10 +12,14 @@ def get_days_and_bounds(
     epoch_date,
     frequency,
 ):
+    # We need to adjust the start_date for the time bounds creation
+    # It is not returned later though (days_since_epoch[1:])
     if frequency == "annual":
         start_date = offset_date(start_date, -1, 0, 0)
+        end_date = offset_date(end_date, 1, 0, 0)
     elif frequency == "monthly":
         start_date = offset_date(start_date, 0, -1, 0)
+        end_date = offset_date(end_date, 0, 1, 0)
     else:
         raise ValueError("Enter a valid time frequency (annual or monthly)")
 
@@ -25,21 +29,23 @@ def get_days_and_bounds(
 
     datetime_type = FREQUENCY_DTYPES[frequency]
 
+    # Here we create the timeseries
     np_days = np.arange(
         np.datetime64(start_date, "D"),
         end,
         dtype="datetime64[D]",
     )
 
+    # And convert it to days (int)
     dates = np_days[np_days == np_days.astype(datetime_type)]
 
     days_since_epoch = (dates - epoch).astype("timedelta64[D]").astype(np.int64)
 
+    # Then we build the bounds array
     bounds = np.empty(
         (len(days_since_epoch) - 1, 2),
         dtype=np.int64,
     )
-
     bounds[:, 0] = days_since_epoch[:-1]
     bounds[:, 1] = days_since_epoch[1:]
 
