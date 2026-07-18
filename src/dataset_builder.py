@@ -10,8 +10,6 @@ def set_time_attributes(ds, frequency, epoch, time_var="time"):
 
     ds[time_var].attrs["calendar"] = "gregorian"
 
-    ds[time_var].attrs["bounds"] = f"time_bounds"
-
 
 def create_template_nc(
     time,
